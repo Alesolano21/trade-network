@@ -65,8 +65,8 @@ function printHelp () {
   echo "      - 'startneworg' - start peers and CAs for new org in containers"
   echo "      - 'stopneworg' - stop peers and CAs of new org"
   echo "      - 'joinneworg' - join peer of new org to existing channels"
-  echo "      - 'startrest' - start all rest servers (importer, exporter, regulator)"
-  echo "      - 'stoprest' - stop all rest servers (importer, exporter, regulator)"
+  echo "      - 'startrest' - start all rest servers (hosp2, hosp1)"
+  echo "      - 'stoprest' - stop all rest servers (hosp2, hosp1)"
   echo "    -c <channel name> - channel name to use"
   echo "    -l <logfile> - log file path"
   echo "    -o <number-of-orgs> - number of organizations in a channel's configuration (either 3 or 4 in this application)"
@@ -77,7 +77,7 @@ function printHelp () {
   echo "    -t <contract init-func> - contract initialization function (defaults to \'init\')"
   echo "    -a <contract init-args> - contract initialization arguments: comma separated strings within single quotes, each string within double quotes (defaults to blank string). Example: '\"abcd\",\"xyz 123\", \"234\"'"
   echo "    -m <mode> - development mode: either 'test' (solo orderer) or 'prod' (Raft ordering service). Defaults to 'test'"
-  echo "    -g <org-name> - organization name: e.g., 'exporterorg', 'importerorg'"
+  echo "    -g <org-name> - organization name: e.g., 'hosp1org', 'hosp2org'"
   echo "    -s <db-type> - either 'leveldb' or 'couchdb' (defaults to 'couchdb')"
   echo "    -r - indicates that volumes ought to be retained when containers are brought down"
   echo
@@ -299,7 +299,7 @@ function networkUp () {
 function newPeerUp () {
   checkPrereqs
   # generate artifacts if they don't exist
-  if [ ! -d "crypto-config/peerOrganizations/importerorg.trade.com/peers/peer1.importerorg.trade.com" ]; then
+  if [ ! -d "crypto-config/peerOrganizations/hosp2org.trade.com/peers/peer1.hosp2org.trade.com" ]; then
     echo "Peer artifacts or configuration missing. Run './trade.sh createnewpeer' to recreate them."
     exit 1
   fi
@@ -443,7 +443,7 @@ function joinNewPeerToChannel () {
   checkAndStartCliContainer
 
   # Join new peer to the channel
-  docker exec -e CHANNEL_NAME=$CHANNEL_NAME -e PEER=peer1 -e ORG=importerorg $CONTAINER_CLI scripts/channel.sh joinnewpeer >>$LOG_FILE_CLI 2>&1
+  docker exec -e CHANNEL_NAME=$CHANNEL_NAME -e PEER=peer1 -e ORG=hosp2org $CONTAINER_CLI scripts/channel.sh joinnewpeer >>$LOG_FILE_CLI 2>&1
   if [ $? -ne 0 ]; then
     echo "ERROR !!!! Unable to join new peer to channel"
     echo "ERROR !!!! See "$LOG_FILE_CLI" for details"
@@ -603,19 +603,19 @@ function installContract () {
   if [ "$CONTRACT_NAME" == "trade" ]
   then
     CC_LANGUAGE=node
-    PEERORGLIST="exporterorg importerorg regulatororg"
+    PEERORGLIST="hosp1org hosp2org"
   elif [ "$CONTRACT_NAME" == "letterOfCredit" ]
   then
     CC_LANGUAGE=java
-    PEERORGLIST="exporterorg importerorg"
+    PEERORGLIST="hosp1org hosp2org"
   elif [ "$CONTRACT_NAME" == "exportLicense" ]
   then
     CC_LANGUAGE=java
-    PEERORGLIST="exporterorg regulatororg"
+    PEERORGLIST="hosp1org"
   elif [ "$CONTRACT_NAME" == "shipment" ]
   then
     CC_LANGUAGE=node
-    PEERORGLIST="exporterorg importerorg carrierorg"
+    PEERORGLIST="hosp1org hosp2org"
   else
     echo "ERROR !!!! Unknown contract: "$CONTRACT_NAME
     exit 1
@@ -673,16 +673,16 @@ function initContract () {
   # Initialize contract state on ledger
   if [ "$CONTRACT_NAME" == "trade" ]
   then
-    PEERORGLIST="exporterorg importerorg regulatororg"
+    PEERORGLIST="hosp1org hosp2org regulatororg"
   elif [ "$CONTRACT_NAME" == "letterOfCredit" ]
   then
-    PEERORGLIST="exporterorg importerorg"
+    PEERORGLIST="hosp1org hosp2org"
   elif [ "$CONTRACT_NAME" == "exportLicense" ]
   then
-    PEERORGLIST="exporterorg regulatororg"
+    PEERORGLIST="hosp1org regulatororg"
   elif [ "$CONTRACT_NAME" == "shipment" ]
   then
-    PEERORGLIST="exporterorg importerorg carrierorg"
+    PEERORGLIST="hosp1org hosp2org carrierorg"
   else
     echo "ERROR !!!! Unknown contract: "$CONTRACT_NAME
     exit 1
@@ -716,19 +716,19 @@ function upgradeContract () {
   if [ "$CONTRACT_NAME" == "trade" ]
   then
     CC_LANGUAGE=node
-    PEERORGLIST="exporterorg importerorg regulatororg"
+    PEERORGLIST="hosp1org hosp2org regulatororg"
   elif [ "$CONTRACT_NAME" == "letterOfCredit" ]
   then
     CC_LANGUAGE=java
-    PEERORGLIST="exporterorg importerorg"
+    PEERORGLIST="hosp1org hosp2org"
   elif [ "$CONTRACT_NAME" == "exportLicense" ]
   then
     CC_LANGUAGE=java
-    PEERORGLIST="exporterorg regulatororg"
+    PEERORGLIST="hosp1org regulatororg"
   elif [ "$CONTRACT_NAME" == "shipment" ]
   then
     CC_LANGUAGE=node
-    PEERORGLIST="exporterorg importerorg carrierorg"
+    PEERORGLIST="hosp1org hosp2org carrierorg"
   else
     echo "ERROR !!!! Unknown contract: "$CONTRACT_NAME
     exit 1
@@ -759,16 +759,16 @@ function invokeContract () {
   # Invoke contract transaction
   if [ "$CONTRACT_NAME" == "trade" ]
   then
-    PEERORGLIST="exporterorg importerorg regulatororg"
+    PEERORGLIST="hosp1org hosp2org regulatororg"
   elif [ "$CONTRACT_NAME" == "letterOfCredit" ]
   then
-    PEERORGLIST="exporterorg importerorg"
+    PEERORGLIST="hosp1org hosp2org"
   elif [ "$CONTRACT_NAME" == "exportLicense" ]
   then
-    PEERORGLIST="exporterorg regulatororg"
+    PEERORGLIST="hosp1org regulatororg"
   elif [ "$CONTRACT_NAME" == "shipment" ]
   then
-    PEERORGLIST="exporterorg importerorg carrierorg"
+    PEERORGLIST="hosp1org hosp2org carrierorg"
   else
     echo "ERROR !!!! Unknown contract: "$CONTRACT_NAME
     exit 1
@@ -838,7 +838,7 @@ function upgradeNetwork () {
     docker-compose $COMPOSE_FILES up --no-deps $ORDERER >$LOG_FILE 2>&1 &
   done
 
-  for PEER in peer0.exporterorg.trade.com peer0.importerorg.trade.com peer0.carrierorg.trade.com peer0.regulatororg.trade.com; do
+  for PEER in peer0.hosp1org.trade.com peer0.hosp2org.trade.com peer0.carrierorg.trade.com peer0.regulatororg.trade.com; do
     echo "Upgrading peer $PEER"
 
     # Stop the peer and backup its ledger
@@ -860,7 +860,7 @@ function upgradeNetwork () {
     docker-compose $COMPOSE_FILES up --no-deps $PEER >$LOG_FILE 2>&1 &
   done
 
-  for CA in exporter importer carrier regulator; do
+  for CA in hosp1 hosp2 carrier regulator; do
     echo "Upgrading CA ${CA}-ca"
 
     # Stop the CA and backup its database
@@ -897,7 +897,7 @@ function networkDown () {
   fi
   echo "Network containers stopped"
 
-  for PEER in peer0.exporterorg.trade.com peer0.importerorg.trade.com peer0.carrierorg.trade.com peer0.regulatororg.trade.com peer1.importerorg.trade.com peer0.exportingentityorg.trade.com; do
+  for PEER in peer0.hosp1org.trade.com peer0.hosp2org.trade.com peer0.carrierorg.trade.com peer0.regulatororg.trade.com peer1.hosp2org.trade.com peer0.exportingentityorg.trade.com; do
     # Remove any old containers and images for this peer
     CC_CONTAINERS=$(docker ps -a | grep dev-$PEER | awk '{print $1}')
     if [ -n "$CC_CONTAINERS" ] ; then
@@ -922,7 +922,7 @@ function networkDown () {
 function newPeerDown () {
   docker-compose -f $COMPOSE_FILE_NEW_PEER down --volumes
   echo "Ignore any error messages of the form 'error while removing network' you see above!!!"
-  docker volume rm ${COMPOSE_PROJECT_NAME}_peer1.importerorg.trade.com
+  docker volume rm ${COMPOSE_PROJECT_NAME}_peer1.hosp2org.trade.com
 }
 
 # Bring down running network components of the new org
@@ -944,11 +944,8 @@ function newOrgNetworkDown () {
 # Delete dynamically created credentials, like wallet identities
 function cleanDynamicIdentities () {
   # remove wallet identities
-  rm -rf ../wallets/exporterorg/*
-  rm -rf ../wallets/importerorg/*
-  rm -rf ../wallets/carrierorg/*
-  rm -rf ../wallets/regulatororg/*
-
+  rm -rf ../wallets/hosp1org/*
+  rm -rf ../wallets/hosp2org/*
   # remove client certs (this is a holdover from the legacy first-edition code)
   rm -rf client-certs
 }
@@ -1071,12 +1068,12 @@ function generateCertsForNewPeer () {
   echo "###### Generate certificates for new peer using cryptogen tool ########"
   echo "#######################################################################"
 
-  if [ ! -d "crypto-config/peerOrganizations/importerorg.trade.com" ]; then
-    echo "No crypto artifacts found for importer org. Please generate that first before trying to add a new peer."
+  if [ ! -d "crypto-config/peerOrganizations/hosp2org.trade.com" ]; then
+    echo "No crypto artifacts found for hosp2 org. Please generate that first before trying to add a new peer."
     exit 1
   fi
   set -x
-  cryptogen extend --input=crypto-config --config=./add_peer_importer/crypto-config.yaml
+  cryptogen extend --input=crypto-config --config=./add_peer_hosp2/crypto-config.yaml
   res=$?
   set +x
   if [ $res -ne 0 ]; then
@@ -1124,7 +1121,7 @@ function generateCertsForNewOrg () {
 # Configtxgen consumes a file - ``configtx.yaml`` - that contains the definitions
 # for the sample network. This file also contains two additional specifications that are worth
 # noting.  Firstly, we specify the anchor peers for each Peer Org
-# (``peer0.exporterorg.trade.com`` & ``peer0.importerorg.trade.com``).  Secondly, we point to
+# (``peer0.hosp1org.trade.com`` & ``peer0.hosp2org.trade.com``).  Secondly, we point to
 # the location of the MSP directory for each member, in turn allowing us to store the
 # root certificates for each Org in the orderer genesis block.  This is a critical
 # concept. Now any network entity communicating with the ordering service can have
@@ -1215,58 +1212,30 @@ function generateChannelArtifacts() {
   if [ "$DEV_MODE" = false ] ; then
     echo
     echo "#####################################################################"
-    echo "#######   Generating anchor peer update for ExporterOrg    ##########"
+    echo "#######   Generating anchor peer update for hosp1Org    ##########"
     echo "#####################################################################"
     set -x
-    configtxgen -profile $CHANNEL_PROFILE -outputAnchorPeersUpdate ./channel-artifacts/${CHANNEL_NAME}/ExporterOrgMSPanchors.tx -asOrg ExporterOrg -channelID $CHANNEL_NAME
+    configtxgen -profile $CHANNEL_PROFILE -outputAnchorPeersUpdate ./channel-artifacts/${CHANNEL_NAME}/Hosp1OrgMSPanchors.tx -asOrg Hosp1Org -channelID $CHANNEL_NAME
     res=$?
     set +x
     if [ $res -ne 0 ]; then
-      echo "Failed to generate anchor peer update for ExporterOrg..."
+      echo "Failed to generate anchor peer update for hosp1Org..."
       exit 1
     fi
 
     echo
     echo "#####################################################################"
-    echo "#######   Generating anchor peer update for ImporterOrg    ##########"
+    echo "#######   Generating anchor peer update for hosp2Org    ##########"
     echo "#####################################################################"
     set -x
-    configtxgen -profile $CHANNEL_PROFILE -outputAnchorPeersUpdate ./channel-artifacts/${CHANNEL_NAME}/ImporterOrgMSPanchors.tx -asOrg ImporterOrg -channelID $CHANNEL_NAME
+    configtxgen -profile $CHANNEL_PROFILE -outputAnchorPeersUpdate ./channel-artifacts/${CHANNEL_NAME}/Hosp2OrgMSPanchors.tx -asOrg Hosp2Org -channelID $CHANNEL_NAME
     res=$?
     set +x
     if [ $res -ne 0 ]; then
-      echo "Failed to generate anchor peer update for ImporterOrg..."
+      echo "Failed to generate anchor peer update for Hosp2Org..."
       exit 1
     fi
 
-    if [ "$NUM_ORGS_IN_CHANNEL" == "4" ]
-    then
-      echo
-      echo "####################################################################"
-      echo "#######   Generating anchor peer update for CarrierOrg    ##########"
-      echo "####################################################################"
-      set -x
-      configtxgen -profile $CHANNEL_PROFILE -outputAnchorPeersUpdate ./channel-artifacts/${CHANNEL_NAME}/CarrierOrgMSPanchors.tx -asOrg CarrierOrg -channelID $CHANNEL_NAME
-      res=$?
-      set +x
-      if [ $res -ne 0 ]; then
-        echo "Failed to generate anchor peer update for CarrierOrg..."
-        exit 1
-      fi
-    fi
-
-    echo
-    echo "######################################################################"
-    echo "#######   Generating anchor peer update for RegulatorOrg    ##########"
-    echo "######################################################################"
-    set -x
-    configtxgen -profile $CHANNEL_PROFILE -outputAnchorPeersUpdate ./channel-artifacts/${CHANNEL_NAME}/RegulatorOrgMSPanchors.tx -asOrg RegulatorOrg -channelID $CHANNEL_NAME
-    res=$?
-    set +x
-    if [ $res -ne 0 ]; then
-      echo "Failed to generate anchor peer update for RegulatorOrg..."
-      exit 1
-    fi
     echo
   fi
 }
@@ -1324,7 +1293,7 @@ function stopRestServers() {
 # use this as the default docker-compose yaml definition
 CHANNEL_NAME_DEV_MODE=trade-dev-channel
 COMPOSE_FILE=docker-compose-e2e.yaml
-COMPOSE_FILE_NEW_PEER=docker-compose-another-importer-peer.yaml
+COMPOSE_FILE_NEW_PEER=docker-compose-another-hosp2-peer.yaml
 COMPOSE_FILE_NEW_ORG=docker-compose-exportingEntityOrg.yaml
 COMPOSE_FILE_RAFT=docker-compose-raft-orderer.yaml
 COMPOSE_FILE_CLI=docker-compose-cli.yaml

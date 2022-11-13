@@ -76,13 +76,22 @@ function parseConfigtxYaml(path) {
 			}
 			orgDefaultParams.peer_ports.forEach(peer_port => {
 				const peerNames = Object.keys(peer_port);
-				if (peerNames.length != 1) {
+				if (peerNames.length != 2) {
 					throw new Error('Expected exactly one peer name in structure for ' + domain + ', found ' + peerNames.length);
 				}
 				let orgJSON = {};
 				orgJSON.name = peerNames[0] + '.' + domain;
 				orgJSON.msp_id = org.ID;
 				orgJSON.api_url = 'grpcs://localhost:' + peer_port[peerNames[0]];
+				orgJSON.type = 'fabric-peer';
+				orgJSON.ssl_target_name_override = orgJSON.name;
+				orgJSON.pem = orgPem;
+				orgsJSON.push(orgJSON);
+				
+				
+				orgJSON.name = peerNames[1] + '.' + domain;
+				orgJSON.msp_id = org.ID;
+				orgJSON.api_url = 'grpcs://localhost:' + peer_port[peerNames[1]];
 				orgJSON.type = 'fabric-peer';
 				orgJSON.ssl_target_name_override = orgJSON.name;
 				orgJSON.pem = orgPem;

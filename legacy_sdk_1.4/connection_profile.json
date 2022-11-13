@@ -2,7 +2,7 @@
     "name": "Trade_Network",
     "version": "1.0.0",
     "client": {
-        "organization": "ExporterOrg",
+        "organization": "Hosp1Org",
         "connection": {
             "timeout": {
                 "peer": {
@@ -14,39 +14,23 @@
     },
     "organizations": {
         "ExporterOrg": {
-            "mspid": "ExporterOrgMSP",
+            "mspid": "Hosp1OrgMSP",
             "peers": [
-                "peer0.exporterorg.trade.com"
+                "peer0.hosp1org.trade.com",
+                "peer1.hosp1org.trade.com"
             ],
             "certificateAuthorities": [
-                "ca.exporterorg.trade.com"
+                "ca.hosp1org.trade.com"
             ]
         },
-        "ImporterOrg": {
-            "mspid": "ImporterOrgMSP",
+        "Hosp2Org": {
+            "mspid": "Hosp2OrgMSP",
             "peers": [
-                "peer0.importerorg.trade.com"
+                "peer0.hosp2org.trade.com",
+                "peer1.hosp2org.trade.com"
             ],
             "certificateAuthorities": [
-                "ca.importerorg.trade.com"
-            ]
-        },
-        "CarrierOrg": {
-            "mspid": "CarrierOrgMSP",
-            "peers": [
-                "peer0.carrierorg.trade.com"
-            ],
-            "certificateAuthorities": [
-                "ca.carrierorg.trade.com"
-            ]
-        },
-        "RegulatorOrg": {
-            "mspid": "RegulatorOrgMSP",
-            "peers": [
-                "peer0.regulatororg.trade.com"
-            ],
-            "certificateAuthorities": [
-                "ca.regulatororg.trade.com"
+                "ca.hosp2org.trade.com"
             ]
         }
     },

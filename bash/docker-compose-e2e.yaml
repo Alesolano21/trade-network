@@ -6,93 +6,53 @@ version: '2'
 
 volumes:
   orderer.trade.com:
-  peer0.exporterorg.trade.com:
-  peer0.importerorg.trade.com:
-  peer0.carrierorg.trade.com:
-  peer0.regulatororg.trade.com:
-  ca.exporterorg.trade.com:
-  ca.importerorg.trade.com:
-  ca.carrierorg.trade.com:
-  ca.regulatororg.trade.com:
+  peer0.hosp1org.trade.com:
+  peer0.hosp2org.trade.com:
+  ca.hosp1org.trade.com:
+  ca.hosp2org.trade.com:
+
 
 networks:
   trade:
 services:
-  exporter-ca:
+  hosp1-ca:
     image: hyperledger/fabric-ca:$CA_IMAGE_TAG
     platform: $PLATFORM
     environment:
       - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
-      - FABRIC_CA_SERVER_CA_NAME=ca-exporterorg
+      - FABRIC_CA_SERVER_CA_NAME=ca-hosp1org
       - FABRIC_CA_SERVER_TLS_ENABLED=true
-      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.exporterorg.trade.com-cert.pem
+      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.hosp1org.trade.com-cert.pem
       - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/priv_sk
     ports:
       - "7054:7054"
-    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.exporterorg.trade.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/priv_sk -b admin:adminpw -d'
+    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.hosp1org.trade.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/priv_sk -b admin:adminpw -d'
     volumes:
-      - ./crypto-config/peerOrganizations/exporterorg.trade.com/ca/:/etc/hyperledger/fabric-ca-server-config
-      - ca.exporterorg.trade.com:/etc/hyperledger/fabric-ca-server
-    container_name: ca.exporterorg.trade.com
+      - ./crypto-config/peerOrganizations/hosp1org.trade.com/ca/:/etc/hyperledger/fabric-ca-server-config
+      - ca.hosp1org.trade.com:/etc/hyperledger/fabric-ca-server
+    container_name: ca.hosp1org.trade.com
     networks:
       - trade
 
-  importer-ca:
+  hosp2-ca:
     image: hyperledger/fabric-ca:$CA_IMAGE_TAG
     platform: $PLATFORM
     environment:
       - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
-      - FABRIC_CA_SERVER_CA_NAME=ca-importerorg
+      - FABRIC_CA_SERVER_CA_NAME=ca-hosp2org
       - FABRIC_CA_SERVER_TLS_ENABLED=true
-      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.importerorg.trade.com-cert.pem
+      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.hosp2org.trade.com-cert.pem
       - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/priv_sk
     ports:
       - "8054:8054"
-    command: sh -c 'fabric-ca-server start --port 8054 --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.importerorg.trade.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/priv_sk -b admin:adminpw -d'
+    command: sh -c 'fabric-ca-server start --port 8054 --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.hosp2org.trade.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/priv_sk -b admin:adminpw -d'
     volumes:
-      - ./crypto-config/peerOrganizations/importerorg.trade.com/ca/:/etc/hyperledger/fabric-ca-server-config
-      - ca.importerorg.trade.com:/etc/hyperledger/fabric-ca-server
-    container_name: ca.importerorg.trade.com
+      - ./crypto-config/peerOrganizations/hosp2org.trade.com/ca/:/etc/hyperledger/fabric-ca-server-config
+      - ca.hosp2org.trade.com:/etc/hyperledger/fabric-ca-server
+    container_name: ca.hosp2org.trade.com
     networks:
       - trade
 
-  carrier-ca:
-    image: hyperledger/fabric-ca:$CA_IMAGE_TAG
-    platform: $PLATFORM
-    environment:
-      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
-      - FABRIC_CA_SERVER_CA_NAME=ca-carrierorg
-      - FABRIC_CA_SERVER_TLS_ENABLED=true
-      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.carrierorg.trade.com-cert.pem
-      - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/priv_sk
-    ports:
-      - "9054:9054"
-    command: sh -c 'fabric-ca-server start --port 9054 --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.carrierorg.trade.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/priv_sk -b admin:adminpw -d'
-    volumes:
-      - ./crypto-config/peerOrganizations/carrierorg.trade.com/ca/:/etc/hyperledger/fabric-ca-server-config
-      - ca.carrierorg.trade.com:/etc/hyperledger/fabric-ca-server
-    container_name: ca.carrierorg.trade.com
-    networks:
-      - trade
-
-  regulator-ca:
-    image: hyperledger/fabric-ca:$CA_IMAGE_TAG
-    platform: $PLATFORM
-    environment:
-      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
-      - FABRIC_CA_SERVER_CA_NAME=ca-regulatororg
-      - FABRIC_CA_SERVER_TLS_ENABLED=true
-      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.regulatororg.trade.com-cert.pem
-      - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/priv_sk
-    ports:
-      - "10054:10054"
-    command: sh -c 'fabric-ca-server start --port 10054 --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.regulatororg.trade.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/priv_sk -b admin:adminpw -d'
-    volumes:
-      - ./crypto-config/peerOrganizations/regulatororg.trade.com/ca/:/etc/hyperledger/fabric-ca-server-config
-      - ca.regulatororg.trade.com:/etc/hyperledger/fabric-ca-server
-    container_name: ca.regulatororg.trade.com
-    networks:
-      - trade
 
   orderer.trade.com:
     extends:
@@ -102,34 +62,35 @@ services:
     networks:
       - trade
 
-  peer0.exporterorg.trade.com:
-    container_name: peer0.exporterorg.trade.com
+  peer0.hosp1org.trade.com:
+    container_name: peer0.hosp1org.trade.com
     extends:
       file:  base/docker-compose-base.yaml
-      service: peer0.exporterorg.trade.com
+      service: peer0.hosp1org.trade.com
     networks:
       - trade
 
-  peer0.importerorg.trade.com:
-    container_name: peer0.importerorg.trade.com
+  peer0.hosp2org.trade.com:
+    container_name: peer0.hosp2org.trade.com
     extends:
       file:  base/docker-compose-base.yaml
-      service: peer0.importerorg.trade.com
+      service: peer0.hosp2org.trade.com
     networks:
       - trade
 
-  peer0.carrierorg.trade.com:
-    container_name: peer0.carrierorg.trade.com
+  peer1.hosp1org.trade.com:
+    container_name: peer1.hosp1org.trade.com
     extends:
       file:  base/docker-compose-base.yaml
-      service: peer0.carrierorg.trade.com
+      service: peer1.hosp1org.trade.com
     networks:
       - trade
 
-  peer0.regulatororg.trade.com:
-    container_name: peer0.regulatororg.trade.com
+  peer1.hosp2org.trade.com:
+    container_name: peer1.hosp2org.trade.com
     extends:
       file:  base/docker-compose-base.yaml
-      service: peer0.regulatororg.trade.com
+      service: peer1.hosp2org.trade.com
     networks:
       - trade
+
